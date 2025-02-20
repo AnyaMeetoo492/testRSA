@@ -1,3 +1,4 @@
+
 #include <regex.h>
 #include <inttypes.h>
 
@@ -7,10 +8,13 @@
 #include <stdio.h>
 #include <string.h>
 
+// POSIX library
 #include <unistd.h>
 #include <sys/mman.h>
 #include <fcntl.h>
 
+
+// mbedtls library
 #include <mbedtls/entropy.h>
 #include <mbedtls/ctr_drbg.h>
 #include <mbedtls/bignum.h>
@@ -23,12 +27,10 @@ int main()
 	
 
 	/** Initialization of the Entropy context **/
-
 	mbedtls_entropy_context entropy;
 	mbedtls_entropy_init( &entropy );
 
 	/** Initialization of the DRBG context **/
-
 	mbedtls_ctr_drbg_context ctr_drbg;
 	mbedtls_ctr_drbg_init( &ctr_drbg );
 	mbedtls_ctr_drbg_seed(&ctr_drbg,
@@ -38,18 +40,15 @@ int main()
 			      0);
 
 	/** Initialization of the RSA context **/
-	
 	mbedtls_rsa_context rsa;
 	mbedtls_rsa_init(&rsa, MBEDTLS_RSA_PKCS_V21, MBEDTLS_MD_SHA256);
 
 	/** Initialization of the PK context **/
-
 	mbedtls_pk_context pk;
 	mbedtls_pk_init (&pk);
 	mbedtls_pk_setup( &pk, mbedtls_pk_info_from_type(MBEDTLS_PK_RSA) );
 
 	/** Generation of RSA parameters **/
-
 	mbedtls_rsa_gen_key(mbedtls_pk_rsa( pk ), 
 			    mbedtls_ctr_drbg_random,
 			    &ctr_drbg,
@@ -57,7 +56,6 @@ int main()
 			    65537);
 			    
 	/** Generation of the Certification Authority Self-Signed Certificate **/
-
 	mbedtls_x509write_cert crt;
 	mbedtls_x509write_crt_init( &crt );
 

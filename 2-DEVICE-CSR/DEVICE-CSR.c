@@ -21,11 +21,8 @@ int main()
 {
 
 	/** Must be completed **/
-	mbedtls_pk_context pk1;
-	mbedtls_pk_init (&pk1);
-
-	mbedtls_pk_context pk2;
-	mbedtls_pk_init (&pk2);
+	mbedtls_pk_context pk;
+	mbedtls_pk_init (&pk);
 
 	mbedtls_ctr_drbg_context ctr_drbg;
 	mbedtls_ctr_drbg_init( &ctr_drbg );
@@ -37,50 +34,28 @@ int main()
 	mbedtls_rsa_init(&rsa, MBEDTLS_RSA_PKCS_V21, MBEDTLS_MD_SHA256);
 
 	/** Initialization of the CSR **/
-
 	mbedtls_x509write_csr csr;
 	mbedtls_x509write_csr_init( &csr );
 
 		/** Certificate signing request **/
-
-	mbedtls_x509write_csr_set_subject_name(&csr,"CN=My Device1, OU=MSIoT Crypto Team, O=MSIoT, L=Toulouse, S=Haute-Garonne, C=FR");
-	mbedtls_x509write_csr_set_key(&csr, &pk1);
+	mbedtls_x509write_csr_set_subject_name(&csr,"CN=My Device, OU=MSIoT Crypto Team, O=MSIoT, L=Toulouse, S=Haute-Garonne, C=FR");
+	mbedtls_x509write_csr_set_key(&csr, &pk);
 	mbedtls_x509write_csr_set_md_alg( &csr, MBEDTLS_MD_SHA256 );
 
 	/** Generation of csr in PEM format **/
-	
-	unsigned char csr_str1[4096];
-	mbedtls_x509write_csr_pem(&csr,csr_str1,4096,mbedtls_ctr_drbg_random,&ctr_drbg);
-	size_t csr_str_len1 = strlen((const char*)csr_str1);
-	FILE* pem_file1 = fopen( "device1.csr", "w" );
-	fwrite( csr_str1, 1, csr_str_len1, pem_file1 );
-	fclose( pem_file1 );
-
-	/** Certificate signing request **/
-
-	mbedtls_x509write_csr_set_subject_name(&csr,"CN=My Device2, OU=MSIoT Crypto Team, O=MSIoT, L=Toulouse, S=Haute-Garonne, C=FR");
-	mbedtls_x509write_csr_set_key(&csr, &pk2);
-	mbedtls_x509write_csr_set_md_alg( &csr, MBEDTLS_MD_SHA256 );
-
-	/** Generation of csr in PEM format **/
-	
-	unsigned char csr_str2[4096];
-	mbedtls_x509write_csr_pem(&csr,csr_str2,4096,mbedtls_ctr_drbg_random,&ctr_drbg);
-	size_t csr_str_len2 = strlen((const char*)csr_str1);
-	FILE* pem_file2 = fopen( "device2.csr", "w" );
-	fwrite( csr_str2, 1, csr_str_len2, pem_file2 );
-	fclose( pem_file2 );
+	unsigned char csr_str[4096];
+	mbedtls_x509write_csr_pem(&csr,csr_str,4096,mbedtls_ctr_drbg_random,&ctr_drbg);
+	size_t csr_str_len = strlen((const char*)csr_str);
+	FILE* pem_file = fopen( "device.csr", "w" );
+	fwrite( csr_str, 1, csr_str_len, pem_file );
+	fclose( pem_file );
 
 	/** free **/
-
 	mbedtls_x509write_csr_free( &csr );
-	mbedtls_pk_free (&pk1);
-	mbedtls_pk_free (&pk2);
-
+	mbedtls_pk_free (&pk);
 	mbedtls_rsa_free( &rsa );
 	mbedtls_ctr_drbg_free( &ctr_drbg );
 	mbedtls_entropy_free( &entropy );
 	
-
 	return 0;
 }

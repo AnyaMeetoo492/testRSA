@@ -26,7 +26,7 @@
 int main()
 {
 
-        // MESSAGE TO BOB
+  // MESSAGE TO BOB
         
 	int fdchannel_a_c;
 	if( (fdchannel_a_c = open("/tmp/unsecured-channel-a-c", O_WRONLY)) == -1) {
@@ -40,7 +40,6 @@ int main()
 	write(fdchannel_a_c,  msg_to_bob, sizeof(msg_to_bob));
 	
 	// RESPONSE FROM BOB
-	
 	if( (fdchannel_a_c = open("/tmp/unsecured-channel-c-a", O_RDONLY)) == -1) {
 		printf("Error opening pipe %s, exit\n","/tmp/unsecured-channel-c-a");
 		return -1;	

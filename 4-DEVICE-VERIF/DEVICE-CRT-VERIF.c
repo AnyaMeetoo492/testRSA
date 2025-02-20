@@ -22,10 +22,8 @@ int main()
 	mbedtls_x509_crt trust_ca,device_ctr,other_trust_ca;
 	mbedtls_x509_crt_init(&trust_ca);
 	mbedtls_x509_crt_init(&device_ctr);
-	mbedtls_x509_crt_parse_file(&trust_ca  ,"/home/meetoo/Bureau/ISS/1-CA-CERT/ca.crt");
-	mbedtls_x509_crt_parse_file(&device_ctr,"/home/meetoo/Bureau/ISS/3-CA-SIGN/device2.crt");
-	//mbedtls_x509_crt_parse_file(&trust_ca  ,"/home/meetoo/Bureau/ISS/ca.crt");
-	//mbedtls_x509_crt_parse_file(&device_ctr,"/home/meetoo/Bureau/ISS/6-RSA-TEST/device.crt");
+	mbedtls_x509_crt_parse_file(&trust_ca  ,"../1-CA-CERT/ca.crt");
+	mbedtls_x509_crt_parse_file(&device_ctr,"../3-CA-SIGN/device.crt");
 	
 	uint32_t verification_flags;
 	if(mbedtls_x509_crt_verify(&device_ctr,

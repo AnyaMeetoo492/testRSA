@@ -26,7 +26,7 @@
 
 int main()
 {
-        // ALICE MESSAGE INTERCEPTION
+  // ALICE MESSAGE INTERCEPTION
         
 	int fdchannel_a_c;
 	if( (fdchannel_a_c = open("/tmp/unsecured-channel-a-c", O_RDONLY)) == -1) {
@@ -68,7 +68,7 @@ int main()
 		
 	printf("[attacker] to alice  : %s\n",msg_from_bob);
 	write(fdchannel_a_c,  msg_from_bob, sizeof(msg_from_bob));
-	//fclose(fdchannel_a_c);
+	fclose(fdchannel_a_c);
 	
 	return 0;
 }
