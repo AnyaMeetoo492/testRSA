@@ -1,0 +1,63 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <mbedtls/entropy.h>
+#include <mbedtls/ctr_drbg.h>
+#include <mbedtls/bignum.h>
+#include <mbedtls/rsa.h>
+#include <mbedtls/x509_csr.h>
+
+#define BUFFER_LENGTH 4096
+
+int main() {
+
+    /** Initialization of the Entropy context **/
+    mbedtls_entropy_context entropy;
+    mbedtls_entropy_init(&entropy);
+
+    /** Initialization of the DRBG context **/
+    mbedtls_ctr_drbg_context ctr_drbg;
+    mbedtls_ctr_drbg_init(&ctr_drbg);
+
+    /** Generate new RSA Key Pair for the new device **/
+    mbedtls_rsa_context rsa_new;
+    mbedtls_rsa_init(&rsa_new, MBEDTLS_RSA_PKCS_V21, MBEDTLS_MD_SHA256);
+
+    int ret = mbedtls_rsa_gen_key(&rsa_new, mbedtls_ctr_drbg_random, &ctr_drbg, 2048, 65537); // 2048-bit key size
+    if (ret != 0) {
+        printf("Error generating RSA key: %d\n", ret);
+        return 1;
+    }
+
+    mbedtls_pk_context pk_new;
+    mbedtls_pk_init(&pk_new);
+    mbedtls_pk_setup(&pk_new, mbedtls_pk_info_from_type(MBEDTLS_PK_RSA));
+    mbedtls_pk_rsa(pk_new) = rsa_new;
+
+    /** Initialization of the CSR **/
+    mbedtls_x509write_csr csr;
+    mbedtls_x509write_csr_init(&csr);
+
+    /** Certificate signing request for "Device 2" **/
+    mbedtls_x509write_csr_set_subject_name(&csr, "CN=Device 2, OU=MSIoT Crypto Team, O=MSIoT, L=Toulouse, S=Haute-Garonne, C=FR");
+    mbedtls_x509write_csr_set_key(&csr, &pk_new);
+    mbedtls_x509write_csr_set_md_alg(&csr, MBEDTLS_MD_SHA256);
+
+    /** Generation of CSR in PEM format **/
+    unsigned char csr_str[BUFFER_LENGTH];
+    mbedtls_x509write_csr_pem(&csr, csr_str, BUFFER_LENGTH, mbedtls_ctr_drbg_random, &ctr_drbg);
+
+    size_t csr_str_len = strlen((const char*)csr_str);
+    FILE* pem_file = fopen("device2.csr", "w");
+    fwrite(csr_str, 1, csr_str_len, pem_file);
+    fclose(pem_file);
+
+    /** Clean up **/
+    mbedtls_x509write_csr_free(&csr);
+    mbedtls_pk_free(&pk_new);
+    mbedtls_rsa_free(&rsa_new);
+    mbedtls_ctr_drbg_free(&ctr_drbg);
+    mbedtls_entropy_free(&entropy);
+
+    return 0;
+}
