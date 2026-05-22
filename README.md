@@ -84,7 +84,3 @@ print(message)  # "Hello Bob!"
 ## Disclaimer
 
 This implementation is for **educational purposes only**. Do not use it in production or for any sensitive data, as real-world cryptography requires extra care.
-
-## License
-
-MIT License.
